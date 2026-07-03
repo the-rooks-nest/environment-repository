@@ -75,12 +75,34 @@ jobs:
           set -euo pipefail
 
           DEPLOY_PATH="$HOME/projects/github/the-rooks-nest/environment-repository"
+          STATUS_FILE="/tmp/environment-repository-deploy.status"
+          LOG_FILE="/tmp/environment-repository-deploy.log"
 
           if [[ ! -d "$DEPLOY_PATH/.git" ]]; then
             mkdir -p "$(dirname "$DEPLOY_PATH")"
             git clone https://github.com/the-rooks-nest/environment-repository.git "$DEPLOY_PATH"
           fi
 
-          cd "$DEPLOY_PATH"
-          ./deploy/deploy.sh
+          rm -f "$STATUS_FILE"
+          nohup bash -lc "cd '$DEPLOY_PATH' && ./deploy/deploy.sh; echo \$? > '$STATUS_FILE'" > "$LOG_FILE" 2>&1 < /dev/null &
           EOF
+
+          for i in $(seq 1 60); do
+            STATUS="$(ssh production-mac 'cat /tmp/environment-repository-deploy.status 2>/dev/null || true')"
+            if [[ -n "$STATUS" ]]; then
+              echo "Remote deploy exit status: $STATUS"
+              if [[ "$STATUS" = "0" ]]; then
+                break
+              fi
+              ssh production-mac 'tail -n 200 /tmp/environment-repository-deploy.log 2>/dev/null || true'
+              exit 1
+            fi
+            sleep 2
+          done
+
+          STATUS="$(ssh production-mac 'cat /tmp/environment-repository-deploy.status 2>/dev/null || true')"
+          if [[ "$STATUS" != "0" ]]; then
+            echo "Timed out waiting for remote deploy status"
+            ssh production-mac 'tail -n 200 /tmp/environment-repository-deploy.log 2>/dev/null || true'
+            exit 1
+          fi
