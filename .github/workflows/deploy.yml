@@ -34,18 +34,18 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     env:
-      DEPLOY_HOST: ${{ secrets.APPLELEAF_DEPLOY_HOST }}
-      DEPLOY_USER: ${{ secrets.APPLELEAF_DEPLOY_USER }}
-      DEPLOY_PORT: ${{ secrets.APPLELEAF_DEPLOY_PORT }}
-      DEPLOY_PATH: ${{ secrets.APPLELEAF_DEPLOY_PATH }}
-      CLOUDFLARE_ACCESS_CLIENT_ID: ${{ secrets.APPLELEAF_CLOUDFLARE_ACCESS_CLIENT_ID }}
-      CLOUDFLARE_ACCESS_CLIENT_SECRET: ${{ secrets.APPLELEAF_CLOUDFLARE_ACCESS_CLIENT_SECRET }}
+      DEPLOY_HOST: ${{ secrets.ROOK_DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.ROOK_DEPLOY_USER }}
+      DEPLOY_PORT: ${{ secrets.ROOK_DEPLOY_PORT }}
+      DEPLOY_PATH: ${{ secrets.ROOK_DEPLOY_PATH }}
+      CLOUDFLARE_ACCESS_CLIENT_ID: ${{ secrets.ROOK_CLOUDFLARE_ACCESS_CLIENT_ID }}
+      CLOUDFLARE_ACCESS_CLIENT_SECRET: ${{ secrets.ROOK_CLOUDFLARE_ACCESS_CLIENT_SECRET }}
     steps:
       - name: Write deploy SSH key
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.APPLELEAF_DEPLOY_SSH_KEY }}" > ~/.ssh/appleleaf_deploy
-          chmod 600 ~/.ssh/appleleaf_deploy
+          printf '%s\n' "${{ secrets.ROOK_DEPLOY_SSH_KEY }}" > ~/.ssh/rook_deploy
+          chmod 600 ~/.ssh/rook_deploy
 
       - name: Install cloudflared
         run: |
@@ -63,7 +63,7 @@ jobs:
             Port ${DEPLOY_PORT:-22}
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            IdentityFile ~/.ssh/appleleaf_deploy
+            IdentityFile ~/.ssh/rook_deploy
             IdentitiesOnly yes
             ServerAliveInterval 30
             ProxyCommand env CLOUDFLARE_ACCESS_CLIENT_ID=${CLOUDFLARE_ACCESS_CLIENT_ID} CLOUDFLARE_ACCESS_CLIENT_SECRET=${CLOUDFLARE_ACCESS_CLIENT_SECRET} cloudflared access tcp --hostname %h

@@ -19,7 +19,7 @@
     <key>EnvironmentVariables</key>
     <dict>
       <key>PORT</key>
-      <string>8000</string>
+      <string>18082</string>
     </dict>
   </dict>
 </plist>
