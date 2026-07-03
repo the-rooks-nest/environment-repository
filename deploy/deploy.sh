@@ -41,7 +41,15 @@ launchctl kickstart -k "gui/$(id -u)/$LABEL"
 
 PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://environments.the-rooks-nest.com/health}"
 echo "==> Checking public health at $PUBLIC_HEALTH_URL"
-curl --fail --silent --show-error "$PUBLIC_HEALTH_URL"
-echo
+for i in $(seq 1 20); do
+  if curl --fail --silent --show-error "$PUBLIC_HEALTH_URL"; then
+    echo
+    break
+  fi
+  if [[ "$i" = "20" ]]; then
+    exit 1
+  fi
+  sleep 2
+ done
 
 echo "==> Deploy complete"
