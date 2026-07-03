@@ -62,9 +62,11 @@ jobs:
           sed 's/=.*/=***MASKED***/g' ~/.ssh/config || true
 
       - name: Test SSH connectivity using repo secrets
+        continue-on-error: true
         run: |
           ssh -vvv production-mac 'echo connected && whoami && hostname && pwd'
 
       - name: Test SSH connectivity using hardcoded known-good host
+        continue-on-error: true
         run: |
           ssh -vvv bustedscreen-hardcoded 'echo connected && whoami && hostname && pwd'
