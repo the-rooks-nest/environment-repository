@@ -46,10 +46,25 @@ jobs:
             IdentitiesOnly yes
             ServerAliveInterval 30
             ProxyCommand env CLOUDFLARE_ACCESS_CLIENT_ID=${CLOUDFLARE_ACCESS_CLIENT_ID} CLOUDFLARE_ACCESS_CLIENT_SECRET=${CLOUDFLARE_ACCESS_CLIENT_SECRET} cloudflared access tcp --hostname %h
+
+          Host bustedscreen-hardcoded
+            HostName bustedscreen.arcturus-labs.com
+            User johnberryman
+            Port 22
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            IdentityFile ~/.ssh/rook_deploy
+            IdentitiesOnly yes
+            ServerAliveInterval 30
+            ProxyCommand env CLOUDFLARE_ACCESS_CLIENT_ID=${CLOUDFLARE_ACCESS_CLIENT_ID} CLOUDFLARE_ACCESS_CLIENT_SECRET=${CLOUDFLARE_ACCESS_CLIENT_SECRET} cloudflared access tcp --hostname %h
           EOF
           chmod 600 ~/.ssh/config
           sed 's/=.*/=***MASKED***/g' ~/.ssh/config || true
 
-      - name: Test SSH connectivity
+      - name: Test SSH connectivity using repo secrets
         run: |
           ssh -vvv production-mac 'echo connected && whoami && hostname && pwd'
+
+      - name: Test SSH connectivity using hardcoded known-good host
+        run: |
+          ssh -vvv bustedscreen-hardcoded 'echo connected && whoami && hostname && pwd'
