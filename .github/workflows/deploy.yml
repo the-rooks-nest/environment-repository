@@ -37,7 +37,6 @@ jobs:
       DEPLOY_HOST: ${{ secrets.ROOK_DEPLOY_HOST }}
       DEPLOY_USER: ${{ secrets.ROOK_DEPLOY_USER }}
       DEPLOY_PORT: ${{ secrets.ROOK_DEPLOY_PORT }}
-      DEPLOY_PATH: ${{ secrets.ROOK_DEPLOY_PATH }}
       CLOUDFLARE_ACCESS_CLIENT_ID: ${{ secrets.ROOK_CLOUDFLARE_ACCESS_CLIENT_ID }}
       CLOUDFLARE_ACCESS_CLIENT_SECRET: ${{ secrets.ROOK_CLOUDFLARE_ACCESS_CLIENT_SECRET }}
     steps:
@@ -72,8 +71,10 @@ jobs:
 
       - name: Deploy over SSH
         run: |
-          ssh production-mac "DEPLOY_PATH='$DEPLOY_PATH' bash -se" <<'EOF'
+          ssh production-mac "bash -se" <<'EOF'
           set -euo pipefail
+
+          DEPLOY_PATH="$HOME/projects/github/the-rooks-nest/environment-repository"
 
           if [[ ! -d "$DEPLOY_PATH/.git" ]]; then
             mkdir -p "$(dirname "$DEPLOY_PATH")"
