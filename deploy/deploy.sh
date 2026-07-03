@@ -39,4 +39,9 @@ fi
 launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
 launchctl kickstart -k "gui/$(id -u)/$LABEL"
 
+PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://environments.the-rooks-nest.com/health}"
+echo "==> Checking public health at $PUBLIC_HEALTH_URL"
+curl --fail --silent --show-error "$PUBLIC_HEALTH_URL"
+echo
+
 echo "==> Deploy complete"
