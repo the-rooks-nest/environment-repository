@@ -20,11 +20,9 @@ This repo currently expects these GitHub Actions secrets:
 ### Likely values / where to get them
 
 #### `ROOK_DEPLOY_HOST`
-- Likely value: `bustedscreen.arcturus-labs.com`
 - Where to get it: local SSH config / the working SSH host used with Cloudflare Access
 
 #### `ROOK_DEPLOY_USER`
-- Likely value: `johnberryman`
 - Where to get it: `whoami` on the target machine, or local SSH config
 
 #### `ROOK_DEPLOY_PORT`
@@ -32,7 +30,6 @@ This repo currently expects these GitHub Actions secrets:
 - Where to get it: SSH config / server SSH setup
 
 #### `ROOK_DEPLOY_SSH_KEY`
-- Likely value/source: the private key contents of `~/.ssh/bustedscreen`
 - Where to get it: copy the private key contents into the GitHub Actions secret
 
 #### `ROOK_CLOUDFLARE_ACCESS_CLIENT_ID`
