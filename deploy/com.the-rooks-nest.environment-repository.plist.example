@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.the-rooks-nest.environment-repository</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/bin/bash</string>
+      <string>-lc</string>
+      <string>cd /path/to/environment-repository && ./deploy/run-production.sh >> logs/stdout.log 2>> logs/stderr.log</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>WorkingDirectory</key>
+    <string>/path/to/environment-repository</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>PORT</key>
+      <string>8000</string>
+    </dict>
+  </dict>
+</plist>
