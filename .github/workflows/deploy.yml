@@ -72,4 +72,14 @@ jobs:
 
       - name: Deploy over SSH
         run: |
-          ssh production-mac "cd '$DEPLOY_PATH' && ./deploy/deploy.sh"
+          ssh production-mac "DEPLOY_PATH='$DEPLOY_PATH' bash -se" <<'EOF'
+          set -euo pipefail
+
+          if [[ ! -d "$DEPLOY_PATH/.git" ]]; then
+            mkdir -p "$(dirname "$DEPLOY_PATH")"
+            git clone https://github.com/the-rooks-nest/environment-repository.git "$DEPLOY_PATH"
+          fi
+
+          cd "$DEPLOY_PATH"
+          ./deploy/deploy.sh
+          EOF
