@@ -39,14 +39,28 @@ fi
 launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
 launchctl kickstart -k "gui/$(id -u)/$LABEL"
 
-PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://environments.the-rooks-nest.com/health}"
-echo "==> Checking public health at $PUBLIC_HEALTH_URL"
+LOCAL_HEALTH_URL="${LOCAL_HEALTH_URL:-http://127.0.0.1:18082/health}"
+echo "==> Checking local health at $LOCAL_HEALTH_URL"
 for i in $(seq 1 20); do
-  if curl --fail --silent --show-error "$PUBLIC_HEALTH_URL"; then
+  if curl --fail --silent --show-error "$LOCAL_HEALTH_URL"; then
     echo
     break
   fi
   if [[ "$i" = "20" ]]; then
+    exit 1
+  fi
+  sleep 1
+ done
+
+PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://environments.the-rooks-nest.com/health}"
+echo "==> Checking public health at $PUBLIC_HEALTH_URL"
+for i in $(seq 1 60); do
+  if curl --fail --silent "$PUBLIC_HEALTH_URL"; then
+    echo
+    break
+  fi
+  if [[ "$i" = "60" ]]; then
+    curl --fail --silent --show-error "$PUBLIC_HEALTH_URL"
     exit 1
   fi
   sleep 2
