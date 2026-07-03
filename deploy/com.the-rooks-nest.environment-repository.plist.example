@@ -4,22 +4,36 @@
   <dict>
     <key>Label</key>
     <string>com.the-rooks-nest.environment-repository</string>
+
+    <key>WorkingDirectory</key>
+    <string>__APP_ROOT__</string>
+
     <key>ProgramArguments</key>
     <array>
       <string>/bin/bash</string>
-      <string>-lc</string>
-      <string>cd /path/to/environment-repository && ./deploy/run-production.sh >> logs/stdout.log 2>> logs/stderr.log</string>
+      <string>__APP_ROOT__/deploy/run-production.sh</string>
     </array>
+
     <key>RunAtLoad</key>
     <true/>
+
     <key>KeepAlive</key>
     <true/>
-    <key>WorkingDirectory</key>
-    <string>/path/to/environment-repository</string>
+
+    <key>StandardOutPath</key>
+    <string>__APP_ROOT__/logs/environment-repository.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__APP_ROOT__/logs/environment-repository.stderr.log</string>
+
     <key>EnvironmentVariables</key>
     <dict>
+      <key>HOME</key>
+      <string>__HOME__</string>
       <key>PORT</key>
       <string>18082</string>
+      <key>ENVIRONMENT_REPOSITORY_LAUNCHD_LABEL</key>
+      <string>com.the-rooks-nest.environment-repository</string>
     </dict>
   </dict>
 </plist>

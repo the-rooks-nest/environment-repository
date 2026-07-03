@@ -10,6 +10,10 @@ export PATH="${BREW_PREFIX}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PA
 cd "$APP_ROOT"
 mkdir -p logs
 
+TEMPLATE_PATH="$APP_ROOT/deploy/com.the-rooks-nest.environment-repository.plist.example"
+TMP_PLIST="$(mktemp)"
+trap 'rm -f "$TMP_PLIST"' EXIT
+
 echo "==> Deploying environment-repository from $(pwd)"
 git fetch origin main
 git reset --hard origin/main
@@ -19,17 +23,20 @@ python3 -m venv .venv
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-if [[ -f "$PLIST_PATH" ]]; then
-  echo "==> Restarting launchd service $LABEL"
-  if launchctl print "gui/$(id -u)/$LABEL" >/dev/null 2>&1; then
-    launchctl kickstart -k "gui/$(id -u)/$LABEL"
-  else
-    launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
-    launchctl kickstart -k "gui/$(id -u)/$LABEL"
-  fi
-else
-  echo "==> No launchd plist found at $PLIST_PATH"
-  echo "==> Dependencies installed, but service was not restarted"
+echo "==> Installing launchd plist"
+sed \
+  -e "s#__APP_ROOT__#$APP_ROOT#g" \
+  -e "s#__HOME__#$HOME#g" \
+  "$TEMPLATE_PATH" > "$TMP_PLIST"
+mkdir -p "$(dirname "$PLIST_PATH")"
+cp "$TMP_PLIST" "$PLIST_PATH"
+chmod 644 "$PLIST_PATH"
+
+echo "==> Restarting launchd service $LABEL"
+if launchctl print "gui/$(id -u)/$LABEL" >/dev/null 2>&1; then
+  launchctl bootout "gui/$(id -u)" "$PLIST_PATH" >/dev/null 2>&1 || true
 fi
+launchctl bootstrap "gui/$(id -u)" "$PLIST_PATH"
+launchctl kickstart -k "gui/$(id -u)/$LABEL"
 
 echo "==> Deploy complete"
